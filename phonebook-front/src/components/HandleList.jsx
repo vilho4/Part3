@@ -4,8 +4,8 @@ const HandleList = ({ persons, deletePerson }) => {
       <div>
         {persons.map((person) => (
           <div key={person.id}>
-            {person.name} {person.number} tama on id= {person.id} <button onClick={() => deletePerson(person)}>Delete</button>
-            {/* <button onClick={() => onDelete(person.id)}>Delete</button> */}
+            {/* {person.name} {person.number} tama on id= {person.id} <button onClick={() => deletePerson(person)}>Delete</button> */}
+            {person.name} {person.number} <button onClick={() => deletePerson(person)}>Delete</button>
           </div>
         ))}
       </div>
