@@ -5,7 +5,6 @@ import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import PersonService from './services/persons'
 import HandleList from './components/HandleList'
-import NotificationMessage from './components/NotificationMessage'
 import './index.css'
 
 const App = () => {
@@ -13,7 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('A new person')
   const [newNumber, setNewNumber] = useState('A new number')
   const [searchName, setSearchName] = useState('')
-  const [notification, setNotification] = useState({ message: '', type: '' })
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     PersonService
@@ -32,36 +31,33 @@ const App = () => {
       // console.log(personObject.name)
     if (personExists(personObject.name)) {
       const foundPerson=personExists(personObject.name)
-      if(window.confirm(`${foundPerson.name} is already added to the phonebook, would you like to update their phone number?`))
-        // this is their number ${foundPerson.name} 
-        // and this is their id ${foundPerson.id}`))
+      if(window.confirm(`${foundPerson.name} is already added to the phonebook, would you like to update their phone number. 
+        this is their number ${foundPerson.name} 
+        and this is their id ${foundPerson.id}`))
         PersonService
         .update(foundPerson.id, personObject)
         .then(vastaus => {
           //console.log(vastaus, 'vastauksen testaus', vastaus.id, '=tämä on vastauksen id')
-          setPersons(persons.map(person => person.id !== vastaus.id ? person : vastaus))
-          setNotification({ message: `${foundPerson.name} Number updated successfully!`, type: 'success' });
-          setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+          setPersons(persons.map(person => vastaus.id !== person.id ? person:vastaus))  
+          setTimeout(() => {
+            Notification(`${foundPerson.name} number updated succesfully`)
+          }, 1000);    
         })
       setNewName('')
       setNewNumber('')
       return
     }
-    const newId = persons.length > 0 ? (Math.max(...persons.map(p => parseInt(p.id))) + 1).toString() : '1'
     if (!personExists(personObject.name)){
+      const uusi_id = (persons.length + 1).toString();
       PersonService
-      .create({...personObject, id:newId})
+      .create({...personObject, id:uusi_id})
       .then((person) => {
         setPersons(persons.concat(person))
         setNewName('')
         setNewNumber('')
-        setNotification({ message: `${person.name} Added successfully`, type: 'success' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 3000)
       })
       .catch(error=>{
-        // console.log(error.response.data)
-        setNotification({ message: `${error.response.data}`, type: 'error' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 3000)
+        console.log(error.response.data)
       })
     }
   }
@@ -71,22 +67,17 @@ const App = () => {
       PersonService
       .deletePerson(person.id)
       .then((reply)=>{
-        // console.log(reply, 'deleted succesfully')
-        const updatedPersons = persons.filter(p => p.id !== person.id)
-        const updatedIds = updatedPersons.map((p, index) => ({
+        console.log(reply, 'deleted succesfully')
+        const idpaivitys=persons
+        .filter((p) => p.id !== person.id)
+        .map((p, index) => ({
           ...p,
           id: (index + 1).toString()
         }))
-        setSuccessMessage(`${reply.name} Deleted succesfully`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 3000)       
-      setPersons(updatedIds)
+      setPersons(idpaivitys)
       })
       .catch((error) => {
-        setNotification({ message: `Note '${person.name}' was already removed from the server`, type: 'error' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 2000)
-        console.log(error)
+        console.error(error, 'errorin tulostus')
       })
     } else {
       console.log("false")
@@ -115,19 +106,30 @@ const App = () => {
     person.name?.toLowerCase().includes(searchName.toLowerCase())
   )
 
+  const NotificationMessages = ({message}) => {
+    if(message===null){
+      return null
+    }
+    return (
+      <div className="error">
+        {message}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <NotificationMessage notification={notification} />
       <input type='text' placeholder='search name' value={searchName} onChange={handleSearchChange} />
       <PersonForm
         onSubmit={addPerson} 
-        newName={newName}
+        newName={newName} 
         handleNameChange={handleNameChange} 
         newNumber={newNumber} 
         handleNumberChange={handleNumberChange}/>
       <h3>Persons</h3>
       <HandleList persons={filteredPersons} deletePerson={deletePerson}/>
+      <NotificationMessages message={errorMessage}/>
     </div>
   )
 }
