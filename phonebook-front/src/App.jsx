@@ -29,7 +29,6 @@ const App = () => {
       name: newName,
       number: newNumber
       }
-      // console.log(personObject.name)
     if (personExists(personObject.name)) {
       const foundPerson=personExists(personObject.name)
       if(window.confirm(`${foundPerson.name} is already added to the phonebook, would you like to update their phone number?`))
@@ -40,8 +39,8 @@ const App = () => {
         .then(vastaus => {
           //console.log(vastaus, 'vastauksen testaus', vastaus.id, '=tämä on vastauksen id')
           setPersons(persons.map(person => person.id !== vastaus.id ? person : vastaus))
-          setNotification({ message: `${foundPerson.name} Number updated successfully!`, type: 'success' });
-          setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+          setNotification({ message: `${foundPerson.name} Number updated successfully!`, type: 'success' })
+          setTimeout(() => setNotification({ message: '', type: '' }), 5000)
         })
       setNewName('')
       setNewNumber('')
@@ -56,12 +55,12 @@ const App = () => {
         setNewName('')
         setNewNumber('')
         setNotification({ message: `${person.name} Added successfully`, type: 'success' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 3000)
+        setTimeout(() => setNotification({ message: '', type: '' }), 5000)
       })
       .catch(error=>{
-        // console.log(error.response.data)
-        setNotification({ message: `${error.response.data}`, type: 'error' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 3000)
+        // console.log(error.response.data.error)
+        setNotification({ message: `${error.response.data.error}`, type: 'error' })
+        setTimeout(() => setNotification({ message: '', type: '' }), 5000)
       })
     }
   }
@@ -72,21 +71,13 @@ const App = () => {
       .deletePerson(person.id)
       .then((reply)=>{
         // console.log(reply, 'deleted succesfully')
-        const updatedPersons = persons.filter(p => p.id !== person.id)
-        const updatedIds = updatedPersons.map((p, index) => ({
-          ...p,
-          id: (index + 1).toString()
-        }))
-        setSuccessMessage(`${reply.name} Deleted succesfully`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 3000)       
-      setPersons(updatedIds)
+        setPersons(persons.filter(p => p.id !== person.id))
+        setNotification({ message: `${person.name} deleted successfully`, type: 'success' })
+        setTimeout(() => setNotification({ message: '', type: '' }), 5000)
       })
       .catch((error) => {
-        setNotification({ message: `Note '${person.name}' was already removed from the server`, type: 'error' })
-        setTimeout(() => setNotification({ message: '', type: '' }), 2000)
-        console.log(error)
+        setNotification({ message: `Error: ${person.name} was already removed from the server`, type: 'error' })
+        setTimeout(() => setNotification({ message: '', type: '' }), 5000)
       })
     } else {
       console.log("false")
@@ -126,7 +117,7 @@ const App = () => {
         handleNameChange={handleNameChange} 
         newNumber={newNumber} 
         handleNumberChange={handleNumberChange}/>
-      <h3>Persons</h3>
+      <h3>Persons!</h3>
       <HandleList persons={filteredPersons} deletePerson={deletePerson}/>
     </div>
   )

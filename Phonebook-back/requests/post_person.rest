@@ -3,6 +3,6 @@ Content-Type: application/json
 ///tyhjärivi
 
 {
-    "name": "testihessu",
-    "number": "123-123123"
+    "name": "testitestaaja",
+    "number": "123123123"
 }

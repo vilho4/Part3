@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-// const { validate } = require('./models/person')
 
 if (process.argv.length<3) {
   console.log('give password as argument and new name and new number')

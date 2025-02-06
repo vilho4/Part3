@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 // const { validate } = require('./models/person')
 // require('dotenv').config()
 
-
 mongoose.set('strictQuery', false)
 
 const url = process.env.MONGODB_URI

@@ -24,7 +24,7 @@
 //       "name": "Teppo Testaaja",
 //       "number": "123-123-123"
 //   }
-// ]  
+// ]
 
 // import dependencies
 require('dotenv').config()
@@ -77,7 +77,10 @@ app.get('/info', (request, response) => {
         <p>${new Date().toString()}</p>
       `)
     })
-    .catch(error => response.status(500).json({ error: 'Database error' }))
+    .catch(error => {
+      console.error(error)
+      response.status(500).json({ error: 'Database error' })
+    })
 })
 
 // app.get('/api/persons/:id', (request, response) => {
@@ -89,17 +92,16 @@ app.get('/info', (request, response) => {
 //       response.status(404).end()
 //   }
 // })
-
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        response.json(person)
+      }   else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons', (request, response) => {
@@ -110,15 +112,15 @@ app.get('/api/persons', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-  .then(result => {
-    console.log(result.name,'deleted succuesfully')
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+    .then(result => {
+      console.log(result.name,'deleted succuesfully')
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 const nameExists = async (name) => {
-  return await Person.findOne({ name }) !== null;
+  return await Person.findOne({ name }) !== null
 }
 
 app.post('/api/persons', async (request, response, next) => {

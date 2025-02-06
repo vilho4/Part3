@@ -1,5 +1,5 @@
 const Person = ({person}) => {
-  console.log("person says hi", {person})
+  // console.log("person says hi", {person})
     return (
       <div>
         {person.name}: {person.number}
